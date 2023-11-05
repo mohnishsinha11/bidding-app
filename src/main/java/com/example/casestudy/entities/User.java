@@ -21,6 +21,10 @@ public class User {
     @Column(name = "user_name", nullable = false, length = 50)
     private String name;
 
+    private String email;
+
+    private String password;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Product> products = new HashSet<>();
 

@@ -11,6 +11,7 @@ import com.example.casestudy.repositories.BidRepo;
 import com.example.casestudy.repositories.ProductRepo;
 import com.example.casestudy.repositories.UserRepo;
 import com.example.casestudy.repositories.WinndingBidRepo;
+import com.example.casestudy.services.EmailSenderService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,9 @@ public class CloseBiddingHandler {
 
     @Autowired
     private WinndingBidRepo winndingBidRepo;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @RabbitListener(queues = Constants.BIDDING_CLOSE_QUEUE)
     public void changeProductStatusToActive(Integer productId){
@@ -57,5 +61,10 @@ public class CloseBiddingHandler {
         System.out.println("  ********* Winning Bid User: " + highestBid.getUser().getUserId());
 
         //send message to winning user
+        System.out.println("Now send notification to user with email : " + winningBid.getUser().getEmail());
+        String message = "Congratulations for winning the bidding for product : "
+                + winningBid.getProduct().getProductName()
+                + " with bidding price : " + winningBid.getWinningPrice();
+        emailSenderService.sendEmail(winningBid.getUser().getEmail(), "Bidding Result", message);
     }
 }
