@@ -31,9 +31,9 @@ public class BiddingController {
         List<BidDto> bidDtoList = biddingService.getAllBids();
         return new ResponseEntity<>(bidDtoList, HttpStatus.OK);
     }
-//
-//    @GetMapping("/category/{categoryId}/products")
-//    public ResponseEntity<List<ProductDto>> getAllProductsByCategory(@PathVariable Integer categoryId){
+
+//    @GetMapping("/bids/winningbids")
+//    public ResponseEntity<List<Wi>> getAllProductsByCategory(@PathVariable Integer categoryId){
 //        List<ProductDto> productDtoList = productService.getAllProductsByCategoryId(categoryId);
 //        return new ResponseEntity<>(productDtoList, HttpStatus.OK);
 //    }

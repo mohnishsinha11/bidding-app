@@ -13,6 +13,6 @@ public class BidDto {
     private Integer bidId;
     private Double bidPrice;
     private LocalDateTime bidTime;
-    private UserDto user;
+    private UserResponseDto user;
     private ProductDto product;
 }

@@ -63,10 +63,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto updateProductStatus(Integer productId, ProductStatus productStatus) {
-        Product product = productRepo.findById(productId).orElseThrow(()->new ResourceNotFoundException("Product", "Product Id", productId));
-        product.setProductStatus(productStatus);
-        Product savedProduct = productRepo.save(product);
-        return modelMapper.map(savedProduct, ProductDto.class);
+    public List<ProductDto> getAllProductsByCategoryIdWhichAreUpForBidding(Integer categoryId) {
+        Category category = categoryRepo.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category","Category Id", categoryId));
+        List<Product> productList = productRepo.findByCategory(category);
+
+        List<ProductDto> productDtoList = productList.stream()
+                .filter(product -> product.getProductStatus().equals(ProductStatus.ACTIVE))
+                .map((product) -> modelMapper.map(product, ProductDto.class)).collect(Collectors.toList());
+
+        return productDtoList;
     }
 }

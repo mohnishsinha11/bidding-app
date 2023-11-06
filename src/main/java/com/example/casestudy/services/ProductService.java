@@ -11,6 +11,5 @@ public interface ProductService {
 
     //get all Products by Category
     List<ProductDto> getAllProductsByCategoryId(Integer categoryId);
-
-    ProductDto updateProductStatus(Integer productId, ProductStatus productStatus);
+    List<ProductDto> getAllProductsByCategoryIdWhichAreUpForBidding(Integer categoryId);
 }

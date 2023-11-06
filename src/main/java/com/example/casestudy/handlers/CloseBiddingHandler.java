@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class CloseBiddingHandler {
@@ -34,37 +35,46 @@ public class CloseBiddingHandler {
     private EmailSenderService emailSenderService;
 
     @RabbitListener(queues = Constants.BIDDING_CLOSE_QUEUE)
-    public void changeProductStatusToActive(Integer productId){
+    public void changeProductStatusToClose(Integer productId){
         System.out.println("  ********* Inside close bidding handler : " + productId);
         Product product = productRepo.findById(productId).orElseThrow(()->new ResourceNotFoundException("Product", "Product Id", productId));
         product.setProductStatus(ProductStatus.CLOSED);
         productRepo.save(product);
 
         List<Bid> bids = bidRepo.findByProduct(product);
-        Bid highestBid = null;
-        Double maxPrice = 0.0;
-        for(Bid currentBid:bids){
-            if(maxPrice < currentBid.getBidPrice()){
-                highestBid = currentBid;
-                maxPrice = currentBid.getBidPrice();
-            }
+        if(Objects.isNull(bids) || bids.isEmpty()){
+            // If there are no bidders send notification to vendors
+            String email = product.getUser().getEmail();
+            String subject = "Bidding update for your product";
+            String message = "There is no bidders for your product. May be try to put your product again for bidding with lower base price.";
+            emailSenderService.sendEmail(email, subject, message);
         }
+        else{
+            Bid highestBid = null;
+            Double maxPrice = 0.0;
+            for(Bid currentBid:bids){
+                if(maxPrice < currentBid.getBidPrice()){
+                    highestBid = currentBid;
+                    maxPrice = currentBid.getBidPrice();
+                }
+            }
 
-        WinningBid winningBid = new WinningBid();
-        winningBid.setProduct(highestBid.getProduct());
-        winningBid.setWinningPrice(highestBid.getBidPrice());
-        winningBid.setUser(highestBid.getUser());
-        winningBid.setWinnerStatus(WinnerStatus.CONFIRMED);
+            WinningBid winningBid = new WinningBid();
+            winningBid.setProduct(highestBid.getProduct());
+            winningBid.setWinningPrice(highestBid.getBidPrice());
+            winningBid.setUser(highestBid.getUser());
+            winningBid.setWinnerStatus(WinnerStatus.CONFIRMED);
 
-        winndingBidRepo.save(winningBid);
-        System.out.println("  ********* Winning Bid Price: " + highestBid.getBidPrice());
-        System.out.println("  ********* Winning Bid User: " + highestBid.getUser().getUserId());
+            winndingBidRepo.save(winningBid);
+            System.out.println("  ********* Winning Bid Price: " + highestBid.getBidPrice());
+            System.out.println("  ********* Winning Bid User: " + highestBid.getUser().getUserId());
 
-        //send message to winning user
-        System.out.println("Now send notification to user with email : " + winningBid.getUser().getEmail());
-        String message = "Congratulations for winning the bidding for product : "
-                + winningBid.getProduct().getProductName()
-                + " with bidding price : " + winningBid.getWinningPrice();
-        emailSenderService.sendEmail(winningBid.getUser().getEmail(), "Bidding Result", message);
+            //send message to winning user
+            System.out.println("Now send notification to user with email : " + winningBid.getUser().getEmail());
+            String message = "Congratulations for winning the bidding for product : "
+                    + winningBid.getProduct().getProductName()
+                    + " with bidding price : " + winningBid.getWinningPrice();
+            emailSenderService.sendEmail(winningBid.getUser().getEmail(), "Bidding Result", message);
+        }
     }
 }

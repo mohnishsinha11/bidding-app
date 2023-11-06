@@ -21,7 +21,7 @@ public class ProductDto {
 
     private CategoryDto category;
 
-    private UserDto user;
+    private UserResponseDto user;
 
     private LocalDateTime dateTimeSlot;
 
