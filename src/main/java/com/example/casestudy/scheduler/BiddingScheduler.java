@@ -23,7 +23,7 @@ public class BiddingScheduler {
 
 
     @Scheduled(fixedRate = 60000) // Runs every minute
-    public void checkProductBidding() {
+    public void checkBiddingProducts() {
         List<ProductDto> productDtoList = productService.getAllProducts();
         System.out.println(" *********  In scheduler  *************");
         for (ProductDto productDto : productDtoList) {

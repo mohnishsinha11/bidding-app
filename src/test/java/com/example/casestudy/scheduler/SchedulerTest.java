@@ -1,6 +1,5 @@
 package com.example.casestudy.scheduler;
 
-import com.example.casestudy.constants.Constants;
 import com.example.casestudy.constants.ProductStatus;
 import com.example.casestudy.constants.Topics;
 import com.example.casestudy.payloads.ProductDto;
@@ -51,7 +50,7 @@ public class SchedulerTest {
 
         when(productService.getAllProducts()).thenReturn(productDtoList);
 
-        biddingScheduler.checkProductBidding();
+        biddingScheduler.checkBiddingProducts();
 
         // Verify that the expected RabbitMQ messages were sent
         verify(rabbitTemplate, times(1)).convertAndSend(TOPIC_EXCHANGE, Topics.START_BIDDING, 1);
