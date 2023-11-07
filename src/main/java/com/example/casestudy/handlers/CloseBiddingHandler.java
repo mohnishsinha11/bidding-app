@@ -43,7 +43,7 @@ public class CloseBiddingHandler {
 
         List<Bid> bids = bidRepo.findByProduct(product);
         if(Objects.isNull(bids) || bids.isEmpty()){
-            // If there are no bidders send notification to vendors
+            // If there are no bidders then send notification to vendor
             String email = product.getUser().getEmail();
             String subject = "Bidding update for your product";
             String message = "There is no bidders for your product. May be try to put your product again for bidding with lower base price.";

@@ -38,7 +38,6 @@ public class BiddingScheduler {
             if (productDto.getProductStatus().equals(ProductStatus.DRAFT) && currentTime.isAfter(productDto.getDateTimeSlot()) && currentTime.isBefore(slotEnd)) {
                 // The productDto is in its bidding slot
                 // Implement logic to handle the bidding process
-                // We can use messaging as well here/ explore messaging
                 // changing the status of productDto to active
                 System.out.println("*************  Change status to active  ****************");
                 //productService.updateProductStatus(productDto.getProductId(), ProductStatus.ACTIVE);
