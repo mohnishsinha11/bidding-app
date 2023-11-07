@@ -3,12 +3,15 @@ package com.example.casestudy.services.impl;
 import com.example.casestudy.entities.Bid;
 import com.example.casestudy.entities.Product;
 import com.example.casestudy.entities.User;
+import com.example.casestudy.entities.WinningBid;
 import com.example.casestudy.exceptions.InvalidBidException;
 import com.example.casestudy.exceptions.ResourceNotFoundException;
 import com.example.casestudy.payloads.BidDto;
+import com.example.casestudy.payloads.WinningBidDto;
 import com.example.casestudy.repositories.BidRepo;
 import com.example.casestudy.repositories.ProductRepo;
 import com.example.casestudy.repositories.UserRepo;
+import com.example.casestudy.repositories.WinndingBidRepo;
 import com.example.casestudy.services.BiddingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,9 @@ public class BiddingServiceImpl implements BiddingService {
     private BidRepo bidRepo;
 
     @Autowired
+    private WinndingBidRepo winndingBidRepo;
+
+    @Autowired
     private ProductRepo productRepo;
 
     @Autowired
@@ -37,10 +43,10 @@ public class BiddingServiceImpl implements BiddingService {
     public BidDto createBid(BidDto bidDto, Integer userId, Integer productId) {
         Bid bid = modelMapper.map(bidDto, Bid.class);
         Product product = productRepo.findById(productId).orElseThrow(
-                ()->new ResourceNotFoundException("Product", "Product Id", productId));
+                () -> new ResourceNotFoundException("Product", "Product Id", productId));
 
         User user = userRepo.findById(userId).orElseThrow(
-                ()->new ResourceNotFoundException("User", "User Id", userId));
+                () -> new ResourceNotFoundException("User", "User Id", userId));
 
         bid.setUser(user);
         bid.setProduct(product);
@@ -49,7 +55,7 @@ public class BiddingServiceImpl implements BiddingService {
         Double bidPrice = bid.getBidPrice();
         bid.setBidTime(LocalDateTime.now());
 
-        if(bidPrice < basePrice){
+        if (bidPrice < basePrice) {
             throw new InvalidBidException(bidDto.getBidId(), bidPrice, basePrice);
         }
 
@@ -69,7 +75,15 @@ public class BiddingServiceImpl implements BiddingService {
     @Override
     public void deleteBid(Integer bidId) {
         Bid bid = bidRepo.findById(bidId).orElseThrow(
-                ()->new ResourceNotFoundException("Bid","Bid Id", bidId));
+                () -> new ResourceNotFoundException("Bid", "Bid Id", bidId));
         bidRepo.delete(bid);
+    }
+
+    @Override
+    public List<WinningBidDto> getAllWinningBids() {
+        List<WinningBid> winningBids = winndingBidRepo.findAll();
+        List<WinningBidDto> winningBidDtos = winningBids.stream().map(
+                (winningBid) -> modelMapper.map(winningBid, WinningBidDto.class)).collect(Collectors.toList());
+        return winningBidDtos;
     }
 }

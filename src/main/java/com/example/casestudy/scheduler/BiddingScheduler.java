@@ -21,6 +21,7 @@ public class BiddingScheduler {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
+
     @Scheduled(fixedRate = 60000) // Runs every minute
     public void checkProductBidding() {
         List<ProductDto> productDtoList = productService.getAllProducts();
@@ -30,7 +31,7 @@ public class BiddingScheduler {
             LocalDateTime slotEnd = productDto.getDateTimeSlot().plus(duration);
             LocalDateTime slotStart = productDto.getDateTimeSlot();
             LocalDateTime currentTime = LocalDateTime.now();
-            System.out.println("****************  Current status is Draft for "+ productDto.getProductId() + "*************");
+            System.out.println("****  Current status for "+ productDto.getProductId() + " is "+ productDto.getProductStatus() +" *****");
             System.out.println(" --- curr time ---  : "+ currentTime);
             System.out.println(" --- slot start ---  : "+ slotStart);
             System.out.println(" --- slot end ---  : "+ slotEnd);
